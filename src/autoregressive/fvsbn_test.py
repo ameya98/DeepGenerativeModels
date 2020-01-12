@@ -17,7 +17,7 @@ if __name__ == "__main__":
 
     # Global properties of the data and model.
     num_classes = 4
-    inp_dimensions = 3
+    inp_dimensions = 10
     num_samples_per_class = 50
     num_training_iterations = 500
 
@@ -30,10 +30,10 @@ if __name__ == "__main__":
 
     # Define datapoints for each class.
     inps = torch.stack([
-                torch.randn(num_samples_per_class, inp_dimensions)/2 + torch.tensor([1, 2, 3]),
-                torch.randn(num_samples_per_class, inp_dimensions)/2 + torch.tensor([1, 0, 3]),
-                torch.randn(num_samples_per_class, inp_dimensions)/2 + torch.tensor([0, 0, 1]),
-                torch.randn(num_samples_per_class, inp_dimensions)/2 + torch.tensor([0, 2, 4])], dim=0)
+                torch.randn(num_samples_per_class, inp_dimensions)/10 + torch.tensor([1, 0, 1, 1, 0, 0, 1, 0, 0, 1]),
+                torch.randn(num_samples_per_class, inp_dimensions)/10 + torch.tensor([0, 0, 1, 0, 0, 1, 0, 1, 0, 1]),
+                torch.randn(num_samples_per_class, inp_dimensions)/10 + torch.tensor([1, 1, 0, 1, 1, 0, 0, 1, 0, 0]),
+                torch.randn(num_samples_per_class, inp_dimensions)/10 + torch.tensor([0, 1, 1, 1, 0, 1, 1, 0, 1, 1])], dim=0)
 
     # Define one model per class.
     models = [FVSBN(inp_dimensions) for _ in range(num_classes)]
@@ -69,19 +69,32 @@ if __name__ == "__main__":
     predicted_log_likelihoods = torch.stack([model(inps_flattened) for model in models], dim=1)
     predicted_classes = torch.argmax(predicted_log_likelihoods, dim=1)
     
-    # Plotting.
+    # Scatterplots of classification.
     fig, axs = plt.subplots(ncols=2, figsize=(10, 5), subplot_kw=dict(projection='3d'))
     axs[0].set_xlabel('x')
     axs[0].set_ylabel('y')
     axs[0].set_zlabel('z')
     axs[0].scatter(inps_flattened[:, 0], inps_flattened[:, 1], inps_flattened[:, 2], c=classes.numpy(), cmap='Set1')
     axs[0].set_title('True Labels', y=1.05)
-
     axs[1].set_xlabel('x')
     axs[1].set_ylabel('y')
     axs[1].set_zlabel('z')
     axs[1].scatter(inps_flattened[:, 0], inps_flattened[:, 1], inps_flattened[:, 2], c=predicted_classes.numpy(), cmap='Set1')
     axs[1].set_title('FVSBN Predicted Labels', y=1.05)
-
     plt.tight_layout()
     plt.show()
+
+    # Scatterplots of generated samples.
+    samples = torch.cat([model.sample(num_samples_per_class) for model in models], dim=0)
+    fig, axs = plt.subplots(ncols=1, figsize=(5, 5), subplot_kw=dict(projection='3d'))
+    axs.set_xlabel('x')
+    axs.set_ylabel('y')
+    axs.set_zlabel('z')
+    axs.scatter(samples[:, 0], samples[:, 1], samples[:, 2], c=classes.numpy(), cmap='Set1')
+    axs.set_title('Samples', y=1.05)
+    plt.tight_layout()
+    plt.show()
+
+
+
+    
