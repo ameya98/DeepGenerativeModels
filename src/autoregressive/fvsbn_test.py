@@ -94,7 +94,3 @@ if __name__ == "__main__":
     axs.set_title('Samples', y=1.05)
     plt.tight_layout()
     plt.show()
-
-
-
-    
