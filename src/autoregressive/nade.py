@@ -20,9 +20,9 @@ class NADE(nn.Module):
         self.sum_matrix = torch.ones(inp_dimensions, inp_dimensions, requires_grad=False)
         for rownum, row in enumerate(self.sum_matrix):
             row[rownum:] = 0
-                
-    # Forward pass to compute log-likelihoods for each input separately.
-    def forward(self, x):
+    
+    # For a given input x, obtain the mean vectors describing the Bernoulli distributions for each dimension, and each sample.
+    def mean_vectors(self, x):
         # Expand each sample as a diagonal matrix.
         x_diag = torch.stack([torch.diag(x_j) for x_j in x])
 
