@@ -33,15 +33,28 @@ class NADE(nn.Module):
         hidden_activations = torch.sigmoid(torch.matmul(self.sum_matrix, dot_products))
 
         # Then multiply element-wise with alpha to get mean vectors.
-        bernoulli_means = torch.sigmoid(torch.sum(torch.mul(hidden_activations, self.alpha_weights), dim=2) + self.alpha_bias)
+        return torch.sigmoid(torch.sum(torch.mul(hidden_activations, self.alpha_weights), dim=2) + self.alpha_bias)
+
+    # Forward pass to compute log-likelihoods for each input separately.
+    def forward(self, x):
+        # Obtain mean vectors.
+        bernoulli_means = self.mean_vectors(x)
 
         # Compute log-likelihoods using the mean vectors.
         log_bernoulli_means = torch.log(bernoulli_means)
         log_likelihoods = x * (log_bernoulli_means) + (1 - x) * (1 - log_bernoulli_means)
-        
+
         return torch.sum(log_likelihoods, dim=1)
 
     # Sample.
     def sample(self, num_samples):
         samples = torch.zeros(num_samples, self.inp_dimensions)
-        raise NotImplementedError
+        for sample_num in range(num_samples):
+            sample = torch.zeros(self.inp_dimensions)
+            for dim in range(self.inp_dimensions):
+                h_dim = torch.sigmoid(self.hidden(sample))
+                bernoulli_mean_dim = torch.sigmoid(self.alpha_weights[dim].dot(h_dim) + self.alpha_bias[dim])
+                distribution = dist.bernoulli.Bernoulli(probs=bernoulli_mean_dim)
+                sample[dim] = distribution.sample()
+            samples[sample_num] = sample
+        return samples
