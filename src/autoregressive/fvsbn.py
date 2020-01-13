@@ -20,7 +20,8 @@ class FVSBN(nn.Module):
     # Forward pass to compute log-likelihoods for each input separately.
     def forward(self, x):
         bernoulli_means = torch.sigmoid(self.linear(x))
-        log_likelihoods = torch.log(bernoulli_means)
+        log_bernoulli_means = torch.log(bernoulli_means)
+        log_likelihoods = x * (log_bernoulli_means) + (1 - x) * (1 - log_bernoulli_means)
         return torch.sum(log_likelihoods, dim=1)
 
     # Do not update weights for indices >= row for each row.
