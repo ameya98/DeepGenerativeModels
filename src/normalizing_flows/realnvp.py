@@ -3,6 +3,7 @@
 
 import torch
 import torch.nn as nn
+import numpy as np
 
 # Mixture distributions for modelling multiple classes, at once.
 class MixtureDistribution:
@@ -13,20 +14,20 @@ class MixtureDistribution:
 
         if weights is not None:
             if len(weights) != self.n_components:
-                raise ValueError('Size of weights %d does not match with number of distributions %d' % (len(weights, self.n_components)))
+                raise ValueError('Size of weights %d does not match with number of distributions %d.' % (len(weights, self.n_components)))
             self.weights = weights
         else:
             self.weights = torch.ones(self.n_components) / self.n_components
 
     def log_prob(self, x):
-        probs = torch.tensor([torch.exp(dist.log_prob(x)) for dist in self.dists])
-        # return torch.log(torch.sum(torch.stack([weight * torch.exp(dist.log_prob(x)) for weight, dist in zip(self.weights, self.dists)]), axis=0))
-        return torch.log(self.weights * probs)
+        probs = torch.stack([torch.exp(dist.log_prob(x)) for dist in self.dists], dim=1)
+        return torch.log(torch.sum(self.weights * probs, dim=1))
     
     def log_probs_classwise(self, x):
         return torch.stack([dist.log_prob(x) for dist in self.dists], dim=1)
         
-    def sample(self, n_samples):
+    def sample(self, sample_shape):
+        n_samples = sample_shape[0]
         samples = torch.zeros((n_samples, self.dims))
         dist_indices = np.random.choice(np.arange(self.n_components), size=n_samples, p=self.weights)
         for index, dist_index in enumerate(dist_indices):
@@ -77,7 +78,7 @@ class RealNVP(nn.Module):
 
         # Compute log-likelihood. If class-conditioned, weight by the individual class probs.
         if self.class_condition:
-            log_pzs_classwise = self.base_dist.log_probs_classwise(x)
+            log_pzs_classwise = self.base_dist.log_probs_classwise(z_hat)
             pzs_classwise = torch.exp(log_pzs_classwise)
             log_pz = torch.log(torch.sum(torch.mul(pzs_classwise, class_probs), dim=1))
         else:
@@ -101,7 +102,9 @@ class RealNVP(nn.Module):
         x = torch.cat([x1, x2], -1)
 
         # Apply inverse permutation.
-        return x[:, self.inv_permutation]
+        x = x[:, self.inv_permutation]
+
+        return x
 
 
 # Stack of RealNVPs.
