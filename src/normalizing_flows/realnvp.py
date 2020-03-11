@@ -24,7 +24,6 @@ class MixtureDistribution:
         return torch.log(self.weights * probs)
     
     def log_probs_classwise(self, x):
-        print(x.shape, torch.stack([dist.log_prob(x) for dist in self.dists], dim=1).shape)
         return torch.stack([dist.log_prob(x) for dist in self.dists], dim=1)
         
     def sample(self, n_samples):
@@ -67,7 +66,6 @@ class RealNVP(nn.Module):
         # Split into pieces.
         x1, x2 = x[:, :self.split_dims], x[:, self.split_dims:] 
 
-        print(x1.shape, x2.shape)
         # Apply transformation.
         z1 = x1
         sig = self.sig_net(x1)
@@ -85,7 +83,7 @@ class RealNVP(nn.Module):
         else:
             log_pz = self.base_dist.log_prob(z_hat) 
 
-        # Log-Jacobian of transformation.
+        # Compute log-Jacobian of transformation.
         log_jacob = sig.sum(-1)
         
         return z_hat, log_pz, log_jacob
@@ -108,18 +106,18 @@ class RealNVP(nn.Module):
 
 # Stack of RealNVPs.
 class stackedRealNVP(nn.Module):
-    def __init__(self, dims, layer_wise_dict):
+    def __init__(self, layer_wise_dict):
         super().__init__()
         self.bijectors = nn.ModuleList([
-            RealNVP(dims, **layer_wise_params) for layer_wise_params in layer_wise_dict.values()
+            RealNVP(**layer_wise_params) for layer_wise_params in layer_wise_dict.values()
         ])
         
     # Pass through each RealNVP one-by-one.
-    def forward(self, x):
+    def forward(self, x, class_probs):
         log_jacobs = []
         
         for bijector in self.bijectors:
-            x, log_pz, lj = bijector(x)
+            x, log_pz, lj = bijector(x, class_probs)
             log_jacobs.append(lj)
         
         return x, log_pz, sum(log_jacobs)
