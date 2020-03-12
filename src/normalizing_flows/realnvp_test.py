@@ -50,11 +50,11 @@ if __name__ == "__main__":
                 nn.Linear(100, inp_dimensions//2))
 
     # Define distributions for the latent-space encodings for each class.
-    mixture = False
+    mixture = True
     if mixture:
         dist = MixtureDistribution(dists=[
-            MultivariateNormal(loc=torch.ones(inp_dimensions) * -0.1, covariance_matrix=torch.eye(inp_dimensions)),
-            MultivariateNormal(loc=torch.ones(inp_dimensions) * +0.1, covariance_matrix=torch.eye(inp_dimensions)),
+            MultivariateNormal(loc=torch.ones(inp_dimensions) * -1.0, covariance_matrix=torch.eye(inp_dimensions)),
+            MultivariateNormal(loc=torch.ones(inp_dimensions) * +1.0, covariance_matrix=torch.eye(inp_dimensions)),
         ], dims=inp_dimensions)
     else:
         dist = MultivariateNormal(loc=torch.zeros(inp_dimensions), covariance_matrix=torch.eye(inp_dimensions))
@@ -66,7 +66,7 @@ if __name__ == "__main__":
             'sig_net': deepcopy(sig_net),
             'base_dist': dist,
             'dims': inp_dimensions,
-            'class_condition': False,
+            'class_condition': True,
         } for layer_num in range(3)
     }
 
