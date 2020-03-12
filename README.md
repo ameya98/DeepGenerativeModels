@@ -1,19 +1,20 @@
 # Deep Generative Models
 My PyTorch implementations of deep generative models.
 
-## Directory Structure
+## How to Use
 The project is structured as such:
 
 ```
 deepgenmodels/
+- utils/
+    - mixture_distribution
+        - MixtureDistribution
 - autoregressive/
     - nade
         - NADE
     - fvsbn
         - FVSBN
 - normalizing_flows/
-    - mixture_distribution
-        - MixtureDistribution
     - realnvp
         - RealNVP
         - RealNVPStacked
