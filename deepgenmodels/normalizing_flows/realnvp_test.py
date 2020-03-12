@@ -12,7 +12,8 @@ from sklearn import cluster, datasets, mixture
 from sklearn.preprocessing import StandardScaler
 
 # Internal dependencies.
-from realnvp import MixtureDistribution, RealNVP, stackedRealNVP
+from mixture_distribution import MixtureDistribution
+from realnvp import RealNVP, RealNVPStacked
 
 if __name__ == "__main__":
 
@@ -71,7 +72,7 @@ if __name__ == "__main__":
     }
 
     # Define stacked RealNVP model.
-    model = stackedRealNVP(layer_wise_dict)
+    model = RealNVPStacked(layer_wise_dict)
 
     # Try learning!
     optim = torch.optim.Adam(model.parameters(), lr=1e-03)
