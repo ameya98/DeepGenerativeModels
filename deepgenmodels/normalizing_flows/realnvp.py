@@ -87,7 +87,7 @@ class RealNVPStacked(nn.Module):
         ])
         
     # Pass through each RealNVP one-by-one.
-    def forward(self, x, class_probs):
+    def forward(self, x, class_probs=None):
         log_jacobs = []
         
         for bijector in self.bijectors:
