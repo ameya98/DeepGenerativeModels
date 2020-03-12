@@ -20,9 +20,37 @@ deepgenmodels/
         - RealNVPStacked
 ```
 
-Thus, to import RealNVP, one would do:
+Thus, to import RealNVP (only one layer) and RealNVPStacked (multiple layers), one would do:
 ```python
-from deepgenmodels.normalizing_flows.realnvp import RealNVP
+from deepgenmodels.normalizing_flows.realnvp import RealNVP, RealNVPStacked
+```
+
+Note that to use the class-conditioned RealNVP, pass *class_condition=True* in the RealNVP constructor, and a *MixtureDistribution* as the *base_dist* parameter. An example:
+```python
+from torch.distributions import MultivariateNormal
+from deepgenmodels.utils.mixture_distribution import MixtureDistribution
+
+# Define distribution.
+inp_dimensions = 4
+dist = MixtureDistribution(dists=[
+            MultivariateNormal(loc=torch.ones(inp_dimensions) * -1.0, covariance_matrix=torch.eye(inp_dimensions)),
+            MultivariateNormal(loc=torch.ones(inp_dimensions) * +1.0, covariance_matrix=torch.eye(inp_dimensions)),
+        ], dims=inp_dimensions)
+
+# Define characteristics of each RealNVP layer.
+num_layers = 3
+layer_wise_dict = {
+    layer_num: {
+        'mu_net': deepcopy(mu_net),
+        'sig_net': deepcopy(sig_net),
+        'base_dist': dist,
+        'dims': inp_dimensions,
+        'class_condition': True,
+    } for layer_num in range(num_layers)
+}
+
+# Create stacked RealNVP model.
+model = RealNVPStacked(layer_wise_dict)
 ```
 
 ## Autoregressive Models
