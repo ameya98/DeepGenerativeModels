@@ -1,6 +1,29 @@
 # Deep Generative Models
 My PyTorch implementations of deep generative models.
 
+## Directory Structure
+The project is structured as such:
+
+```
+deepgenmodels/
+- autoregressive/
+    - nade
+        - NADE
+    - fvsbn
+        - FVSBN
+- normalizing_flows/
+    - mixture_distribution
+        - MixtureDistribution
+    - realnvp
+        - RealNVP
+        - RealNVPStacked
+```
+
+Thus, to import RealNVP, one would do:
+```python
+from deepgenmodels.normalizing_flows.realnvp import RealNVP
+```
+
 ## Autoregressive Models
 ### Fully Visible Sigmoidal Belief Network (FVSBN)
 <p align="center">
