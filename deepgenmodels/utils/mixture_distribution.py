@@ -1,6 +1,8 @@
 # Mixture distributions for modelling multiple classes, at once.
 # Author: Ameya Daigavane
 
+import torch
+
 class MixtureDistribution:
     def __init__(self, dims, dists, weights=None):
         self.dims = dims

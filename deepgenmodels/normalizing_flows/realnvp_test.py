@@ -10,8 +10,10 @@ import matplotlib.pyplot as plt
 import numpy as np
 from sklearn import cluster, datasets, mixture
 from sklearn.preprocessing import StandardScaler
+import sys
 
 # Internal dependencies.
+sys.path.append('../utils/')
 from mixture_distribution import MixtureDistribution
 from realnvp import RealNVP, RealNVPStacked
 
