@@ -1,6 +1,12 @@
 # Deep Generative Models
 My PyTorch implementations of deep generative models.
 
+## How to Install
+Install the Python package *deepgenmodels* from this repository with:
+```bash
+pip install git+https://github.com/ameya98/DeepGenerativeModels.git
+```
+
 ## How to Use
 The project is structured as such:
 
