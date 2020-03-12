@@ -1,1 +1,1 @@
-from realnvp import RealNVP, RealNVPStacked
+from .realnvp import RealNVP, RealNVPStacked

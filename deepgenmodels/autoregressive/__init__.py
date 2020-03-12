@@ -1,2 +1,2 @@
-from fvsbn import FVSBN
-from nade import NADE
+from .fvsbn import FVSBN
+from .nade import NADE

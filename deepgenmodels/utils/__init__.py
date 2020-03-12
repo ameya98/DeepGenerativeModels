@@ -1,1 +1,1 @@
-from mixture_distribution import MixtureDistribution
+from .mixture_distribution import MixtureDistribution
