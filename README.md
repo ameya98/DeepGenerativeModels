@@ -4,7 +4,7 @@ My PyTorch implementations of deep generative models.
 ## How to Install
 Install the Python package *deepgenmodels* from this repository with:
 ```bash
-pip install git+https://github.com/ameya98/DeepGenerativeModels.git
+pip install git+https://github.com/ameya98/DeepGenerativeModels.git --upgrade
 ```
 
 ## How to Use
@@ -28,13 +28,13 @@ deepgenmodels/
 
 Thus, to import RealNVP (only one layer) and RealNVPStacked (multiple layers), one would do:
 ```python
-from deepgenmodels.normalizing_flows.realnvp import RealNVP, RealNVPStacked
+from deepgenmodels.normalizing_flows import RealNVP, RealNVPStacked
 ```
 
 Note that to use the class-conditioned RealNVP, pass *class_condition=True* in the RealNVP constructor, and a *MixtureDistribution* as the *base_dist* parameter. An example:
 ```python
 from torch.distributions import MultivariateNormal
-from deepgenmodels.utils.mixture_distribution import MixtureDistribution
+from deepgenmodels.utils import MixtureDistribution
 
 # Define distribution.
 inp_dimensions = 4
