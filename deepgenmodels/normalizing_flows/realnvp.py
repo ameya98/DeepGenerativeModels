@@ -50,8 +50,10 @@ class RealNVP(nn.Module):
         # Compute log-likelihood. If class-conditioned, weight by the individual class probs.
         if self.class_condition:
             log_pzs_classwise = self.base_dist.log_probs_classwise(z_hat)
+            log_pzs_min = torch.min(log_pzs_classwise, dim=1, keepdim=True)[0]
+            log_pzs_classwise -= log_pzs_min
             pzs_classwise = torch.exp(log_pzs_classwise)
-            log_pz = torch.log(torch.sum(torch.mul(pzs_classwise, class_probs), dim=1))
+            log_pz = log_pzs_min + torch.log(torch.sum(torch.mul(pzs_classwise, class_probs), dim=1))
         else:
             log_pz = self.base_dist.log_prob(z_hat) 
 
